@@ -1,7 +1,7 @@
 # Requirements
 
 - [firefox developer edition](https://www.mozilla.org/en-US/firefox/developer/)
-- [python 3.x] (https://www.python.org/downloads/)
+- [python 3.x](https://www.python.org/downloads/)
 
 # in windows
 
