@@ -1,3 +1,8 @@
+# Archi
+
+This solution is based on the **selenium lib of python**.
+The script simulates the human intervention with the website.
+
 # Requirements
 
 - [firefox developer edition](https://www.mozilla.org/en-US/firefox/developer/)
