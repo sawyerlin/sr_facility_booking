@@ -14,4 +14,4 @@
 
 ### Run:
 
-python .\src\main.py -u your_user -f tennis -ds 2023-03-28 -ts 09:00:00
+python .\src\main.py -u **your_user** -f tennis -ds 2023-03-28 -ts 09:00:00
