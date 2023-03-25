@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from time import sleep
 from random import uniform
 
@@ -13,3 +15,8 @@ def short_wait():
 def long_wait():
     rand=uniform(LONG_MIN_RAND, LONG_MAX_RAND)
     sleep(rand)
+
+def get_strtime(format: str = "%Y-%m-%d_%H-%M-%S"):
+    now = datetime.now()
+    current_time = now.strftime(format)
+    return current_time

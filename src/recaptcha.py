@@ -77,14 +77,12 @@ def solve_recaptcha(driver):
     try:
         logging.info("Switch Frame")
         driver.switch_to.default_content()
-        recaptcha_challenge_iframe = WebDriverWait(driver, 10).until(
+        recaptcha_challenge_iframe = WebDriverWait(driver, 2).until(
             EC.presence_of_element_located((By.XPATH, "//iframe[contains(@title, 'recaptcha challenge')]"))
         )
         if recaptcha_challenge_iframe:
             driver.switch_to.frame(recaptcha_challenge_iframe)
-
             short_wait()
-
             logging.info("Finding solver button")
             tab_act = ActionChains(driver)
             tab_act.send_keys(Keys.TAB).perform()
@@ -93,26 +91,9 @@ def solve_recaptcha(driver):
             short_wait()
             tab_act.send_keys(Keys.ENTER).perform()
 
-            logging.info("Wait")
             long_wait()
 
-            try:
-                logging.info("Alert exists")
-                WebDriverWait(driver, 5).until(EC.alert_is_present())
-                alert = driver.switch_to.alert
-                logging.info("Wait before accept alert")
-                short_wait()
-
-                alert.accept()
-
-                short_wait()
-                logging.info("Alert accepted, retry captcha solver")
-
-                solve_recaptcha(driver)
-            except:
-                logging.info('solved_recaptcha')
-
-            logging.info("Switch to default")
             driver.switch_to.default_content()
+            logging.info("Switch to default")
     except Exception as ex:
         logging.info("no challenge", ex)

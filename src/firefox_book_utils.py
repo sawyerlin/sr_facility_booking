@@ -4,12 +4,14 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-from selenium_utils import click_element, get_locate
+from selenium_utils import click_element, get_locate, get_clickable, wait_until_to_be_url
 from utils import short_wait, long_wait
 
 FACILITIES={
     'tennis':'2645cdd3-bbbe-11ec-befc-02447a44a47c'
 }
+
+BASE_URL = "https://app.iplusliving.com"
 
 def _get_options(headless: bool = True)->Options:
     options = webdriver.FirefoxOptions()
@@ -23,6 +25,8 @@ def _get_options(headless: bool = True)->Options:
     options.add_argument(f'user-agent={user_agent}')
     options.add_argument('--disable-blink-features=AutomationControlled')
     options.set_preference("xpinstall.signatures.required", False)
+    # options.set_preference("browser.formfill.enable", False)
+    options.set_preference("signon.autofillForms", False)
     return options
 
 def get_driver(headless: bool = True)->WebDriver:
@@ -31,24 +35,18 @@ def get_driver(headless: bool = True)->WebDriver:
     driver.install_addon("buster-firefox.xpi")
     return driver
 
-def login(driver, username, password, login_url):
-    driver.get(login_url)
-    username_field = get_locate(driver, By.ID, "user-username")
-    password_field = get_locate(driver, By.ID, "user-password")
-    username_field.send_keys(Keys.HOME + Keys.SHIFT + Keys.END)
+def login(driver, username, password, site_url):
+    driver.get(f"{site_url}site/login")
+    username_field = get_clickable(driver, By.ID, "user-username")
+    password_field = get_clickable(driver, By.ID, "user-password")
     username_field.send_keys(username)
-    password_field.send_keys(Keys.HOME + Keys.SHIFT + Keys.END)
     password_field.send_keys(password)
     password_field.send_keys(Keys.RETURN)
+    wait_until_to_be_url(driver, site_url)
     logging.info('login')
 
-def go_to_facility(driver, facility):
-    short_wait()
-    click_element(driver, By.XPATH, "//a[@href='/amenity/index']")
-    logging.info('open facility list')
-
-    click_element(driver, By.XPATH, f"//a[@href='/amenity/amenitybooking?amenity={FACILITIES[facility]}']")
-    logging.info(f'open the facility {facility}')
+def go_to_facility(driver, facility, site_url):
+    driver.get(f"{site_url}amenity/amenitybooking?amenity={FACILITIES[facility]}")
 
 def book(driver, date_slot, time_slot):
     click_element(driver, By.XPATH, f"//td[@data-date='{date_slot}' and contains(@class, 'fc-day-number')]")
