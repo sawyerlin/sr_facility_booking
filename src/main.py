@@ -15,7 +15,11 @@ from utils import get_strtime, wait_until
 @click.option('--site_url', '-lu', default="https://app.iplusliving.com/", help='login url')
 def main(username, password, facility, date_slot, time_slot, time_until, site_url):
     password = password if password else click.prompt('Password', hide_input=True)
-    with get_driver(headless=True) as driver:
+    # driver = get_driver(headless=False)
+    # login(driver, username, password, site_url)
+    # go_to_facility(driver, facility, site_url)
+    # solve_recaptcha(driver)
+    with get_driver(headless=False) as driver:
         try:
             login(driver, username, password, site_url)
             wait_until(time_until) # start the following code after the until time reached
