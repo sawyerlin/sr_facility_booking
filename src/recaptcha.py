@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium_utils import get_locate
 from utils import short_wait, long_wait
 
 def human_like_mouse_move(action, start_element):
@@ -44,7 +45,7 @@ def human_like_mouse_move(action, start_element):
     for mouse_x, mouse_y in zip(x_i, y_i):
         action.move_by_offset(mouse_x,mouse_y)
         action.perform()
-        print("Move mouse to, %s ,%s" % (mouse_x, mouse_y))   
+        logging.info("Move mouse to, %s ,%s" % (mouse_x, mouse_y))   
         i += 1    
         if i == c:
             break
@@ -52,34 +53,25 @@ def human_like_mouse_move(action, start_element):
 def solve_recaptcha(driver):
 
     driver.switch_to.default_content()
-    logging.info("Switch to new frame")
     driver.switch_to.frame(driver.find_elements(By.TAG_NAME, "iframe")[0])
+    logging.info("Switch to recaptcha iframe")
 
-    logging.info("Wait for recaptcha-anchor")
     check_box = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID ,"recaptcha-anchor")))
-
-    logging.info("Wait")
-    short_wait()
-
     action =  ActionChains(driver)
     human_like_mouse_move(action, check_box)
-
-    logging.info("Click")
     check_box.click()
-
-    logging.info("Wait")
-    short_wait()
-
-    logging.info("Mouse movements")
-    action = ActionChains(driver)
-    human_like_mouse_move(action, check_box)
+    logging.info("Clicked on recaptcha")
 
     try:
         logging.info("Switch Frame")
         driver.switch_to.default_content()
-        recaptcha_challenge_iframe = WebDriverWait(driver, 2).until(
+        recaptcha_challenge_iframe = WebDriverWait(driver, 1).until(
             EC.presence_of_element_located((By.XPATH, "//iframe[contains(@title, 'recaptcha challenge')]"))
         )
+        short_wait()
+        action = ActionChains(driver)
+        human_like_mouse_move(action, check_box)
+        logging.info("Wait a while and simulate human mouse moving")
         if recaptcha_challenge_iframe:
             driver.switch_to.frame(recaptcha_challenge_iframe)
             short_wait()
@@ -90,10 +82,7 @@ def solve_recaptcha(driver):
             tab_act.send_keys(Keys.TAB).perform()
             short_wait()
             tab_act.send_keys(Keys.ENTER).perform()
-
-            long_wait()
-
             driver.switch_to.default_content()
             logging.info("Switch to default")
-    except Exception as ex:
-        logging.info("no challenge", ex)
+    except Exception:
+        logging.info("no challenge")

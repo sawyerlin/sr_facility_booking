@@ -47,6 +47,7 @@ def login(driver, username, password, site_url):
 
 def go_to_facility(driver, facility, site_url):
     driver.get(f"{site_url}amenity/amenitybooking?amenity={FACILITIES[facility]}")
+    logging.info('facility booking page')
 
 def book(driver, date_slot, time_slot):
     click_element(driver, By.XPATH, f"//td[@data-date='{date_slot}' and contains(@class, 'fc-day-number')]")
@@ -60,15 +61,9 @@ def book(driver, date_slot, time_slot):
     logging.info('submit the choices')
 
 def confirm_book(driver):
-    click_element(driver, By.XPATH, "//div[contains(@class, 'field-dynamicmodel-termsandconditions')]")
-    logging.info('clicked checkbox on the agreement')
-
-    long_wait()
-
-    click_element(driver, By.XPATH, "//button[@id='agree_btn_id']")
-    logging.info('clicked button on the agreement')
-
-    long_wait()
+    checkbox = get_locate(driver, By.XPATH, "//input[@id='dynamicmodel-termsandconditions']")
+    driver.execute_script("arguments[0].checked = true;", checkbox)
+    logging.info('condition checkbox checked')
 
     click_element(driver, By.XPATH, "//input[@name='submit-button']")
     logging.info('clicked button on the booking')
@@ -79,4 +74,4 @@ def confirm_book(driver):
     logging.info('clicked button on the booking confirmation')
 
     success_msg = get_locate(driver, By.XPATH, "//div[@class='success-msg']//p")
-    print(success_msg.text)
+    logging.info(success_msg.text)

@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import datetime
 from time import sleep
 from random import uniform
 
@@ -17,6 +18,11 @@ def long_wait():
     sleep(rand)
 
 def get_strtime(format: str = "%Y-%m-%d_%H-%M-%S"):
-    now = datetime.now()
+    now = datetime.datetime.now()
     current_time = now.strftime(format)
     return current_time
+
+def wait_until(wait_until: str):
+    wait_until_time = datetime.datetime.strptime(wait_until, "%H:%M:%S").time()
+    while datetime.datetime.now().time() < wait_until_time:
+        sleep(1)
