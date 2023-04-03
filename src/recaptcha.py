@@ -63,6 +63,11 @@ def solve_recaptcha(driver):
     check_box.click()
     logging.info("Clicked on recaptcha")
 
+    short_wait()
+    action = ActionChains(driver)
+    human_like_mouse_move(action, check_box)
+    logging.info("Simulated mouse movements and wait")
+
     try:
         driver.switch_to.default_content()
         recaptcha_challenge_iframe = get_locate(driver, By.XPATH, "//iframe[contains(@title, 'recaptcha challenge')]", 2)
@@ -76,6 +81,7 @@ def solve_recaptcha(driver):
             short_wait()
             tab_act.send_keys(Keys.ENTER).perform()
             driver.switch_to.default_content()
+            long_wait()
             logging.info("Switch to default")
     except TimeoutException:
         raise TimeoutException("Challenge Failed")

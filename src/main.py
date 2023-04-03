@@ -7,26 +7,20 @@ from utils import get_strtime, wait_until
 @click.command()
 @click.option('--username', '-u', required=True, help='username')
 @click.option('--password', '-p', required=False, help='password')
-# @click.option('--facility', '-f', default="tennis", help='guid of facility')
 @click.option('--facility', '-f', required=True, help='facility name, mapping can be found in firefox_book_utils')
-@click.option('--date_slot', '-ds', required=True, help='date slot')
-@click.option('--time_slot', '-ts', required=True, help='time slot')
-@click.option('--time_until', '-tu', default="23:59:58", help='specific time on when the facility booking start')
+@click.option('--date', '-d', required=True, help='date')
+@click.option('--is_next_month/--is_current_month', default=False, help='month')
+@click.option('--time', '-t', required=True, help='time')
+@click.option('--wait', '-w', default="2023-03-31 23:59:58", help='specific datetime on wait')
 @click.option('--site_url', '-lu', default="https://app.iplusliving.com/", help='login url')
-def main(username, password, facility, date_slot, time_slot, time_until, site_url):
+def main(username, password, facility, date, is_next_month, time, wait, site_url):
     password = password if password else click.prompt('Password', hide_input=True)
-    # driver = get_driver(headless=False)
-    # login(driver, username, password, site_url)
-    # go_to_facility(driver, facility, site_url)
-    # solve_recaptcha(driver)
     with get_driver(headless=False) as driver:
         try:
             login(driver, username, password, site_url)
-            wait_until(time_until) # start the following code after the until time reached
-            logging.info(f"{time_until} has been reached")
             go_to_facility(driver, facility, site_url)
             solve_recaptcha(driver)
-            book(driver, date_slot, time_slot)
+            book(driver, is_next_month, date, time, wait)
             confirm_book(driver)
         except Exception as ex:
             logging.error(ex)

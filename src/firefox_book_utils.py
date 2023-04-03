@@ -5,10 +5,11 @@ from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium_utils import click_element, get_locate, get_clickable, wait_until_to_be_url
-from utils import short_wait, long_wait
+from utils import short_wait, wait_until
 
 FACILITIES={
-    'tennis':'2645cdd3-bbbe-11ec-befc-02447a44a47c'
+    'tennis':'2645cdd3-bbbe-11ec-befc-02447a44a47c',
+    'bbq': '78be6228-c091-11ec-befc-02447a44a47c',
 }
 
 BASE_URL = "https://app.iplusliving.com"
@@ -49,13 +50,20 @@ def go_to_facility(driver, facility, site_url):
     driver.get(f"{site_url}amenity/amenitybooking?amenity={FACILITIES[facility]}")
     logging.info('facility booking page')
 
-def book(driver, date_slot, time_slot):
-    click_element(driver, By.XPATH, f"//td[@data-date='{date_slot}' and contains(@class, 'fc-day-number')]")
-    logging.info(f'clicked on date {date_slot}')
+def book(driver, is_next_month: bool, date, time, wait):
+    if is_next_month:
+        click_element(driver, By.XPATH, "//button[@class='fc-next-button fc-button fc-state-default fc-corner-right']")
+        logging.info("go to next month")
 
-    datetime_slot = f"{date_slot} {time_slot}"
+    wait_until(wait) # start the following code after the until time reached
+    logging.info(f"{wait} has been reached")
+
+    click_element(driver, By.XPATH, f"//td[@data-date='{date}' and contains(@class, 'fc-day-number')]")
+    logging.info(f'clicked on date {date}')
+
+    datetime_slot = f"{date} {time}"
     click_element(driver, By.XPATH, f"//div[@data-link-start='{datetime_slot}']")
-    logging.info(f'clicked on time {time_slot}')
+    logging.info(f'clicked on time {time}')
 
     click_element(driver, By.XPATH, "//input[@name='submit-button']")
     logging.info('submit the choices')
